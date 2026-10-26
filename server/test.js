@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {VALID_IDS,isAllowed,safetySignal,classifyFallback}=require('./policy');
+const frontend=fs.readFileSync(require('node:path').join(__dirname,'../responsePolicy.js'),'utf8');
+for(const id of VALID_IDS)assert(frontend.includes(`${id}:`),`Missing student-visible response: ${id}`);
+assert.equal(safetySignal('I want to kill myself'),true);
+assert.equal(safetySignal('I want to die'),true);
+assert.equal(safetySignal('I have a test tomorrow'),false);
+assert.equal(classifyFallback('I am anxious about my exam'),'EXAM_STRESS_01');
+assert.equal(classifyFallback('I am feeling lonely'),'LONELY_01');
+assert.equal(classifyFallback('I feel pretty happy today'),'POSITIVE_01');
+assert.equal(classifyFallback('I want to hurt myself'),'SAFETY_01');
+assert.equal(isAllowed('WRITE_ME_NEW_TEXT'),false);
+console.log('Response library, safety checks, classification fallback: PASS');
